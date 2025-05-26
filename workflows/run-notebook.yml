@@ -1,0 +1,34 @@
+name: Run Topological Plasma Notebook
+
+on:
+  push:
+    paths:
+      - '**.ipynb'
+  workflow_dispatch:
+
+jobs:
+  run-notebook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Jupyter & nbconvert
+        run: |
+          python -m pip install --upgrade pip
+          pip install nbconvert jupyter matplotlib numpy
+
+      - name: Run notebook and export HTML
+        run: |
+          jupyter nbconvert --to html --execute topo_plasma_sim.ipynb
+
+      - name: Upload executed notebook
+        uses: actions/upload-artifact@v3
+        with:
+          name: executed-notebook
+          path: topo_plasma_sim.html
